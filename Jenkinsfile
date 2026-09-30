@@ -3,40 +3,49 @@ pipeline {
 
     stages {
 
-        stage('Clone') {
+        stage('Flutter Doctor') {
             steps {
-                checkout scm
+                bat 'flutter doctor -v'
             }
         }
 
-        stage('Build') {
+        stage('Install Dependencies') {
             steps {
-                echo 'Running build phase...'
-                bat 'cd frontend && npm install'
-                bat 'cd frontend && npm run build'
+                bat 'flutter pub get'
+            }
+        }
+
+        stage('Analyze') {
+            steps {
+                bat 'flutter analyze'
             }
         }
 
         stage('Test') {
             steps {
-                echo 'Running test phase...'
-                bat 'cd frontend && npm run lint'
+                bat 'flutter test'
+            }
+        }
+
+        stage('Build APK') {
+            steps {
+                bat 'flutter build apk --release'
             }
         }
     }
 
     post {
         always {
-            echo 'Pipeline completed.'
-            cleanWs()
+            archiveArtifacts artifacts: 'build\\app\\outputs\\flutter-apk\\app-release.apk',
+                             allowEmptyArchive: true
         }
 
         success {
-            echo 'Build and tests completed successfully.'
+            echo 'Flutter project built and tested successfully!'
         }
 
         failure {
-            echo 'Build or tests failed.'
+            echo 'Build or test failed. Check the console output.'
         }
     }
 }

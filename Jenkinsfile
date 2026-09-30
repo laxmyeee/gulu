@@ -5,54 +5,83 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                echo 'Checking out the project...'
+                echo 'Checking out NutriFlow source code...'
                 checkout scm
             }
         }
 
-        stage('Check Project') {
+        stage('Backend - Install') {
             steps {
-                echo 'Checking project files...'
-                bat 'dir'
-                bat 'dir backend'
-                bat 'dir frontend'
+                echo 'Installing backend dependencies...'
+                dir('backend') {
+                    sh 'npm ci'
+                }
             }
         }
 
-        stage('Backend') {
+        stage('Backend - Test') {
             steps {
-                echo 'Checking backend...'
-                bat 'cd backend && dir'
+                echo 'Running backend tests...'
+                dir('backend') {
+                    sh 'npm test'
+                }
             }
         }
 
-        stage('Frontend') {
+        stage('Backend - Build') {
             steps {
-                echo 'Checking frontend...'
-                bat 'cd frontend && dir'
+                echo 'Building backend...'
+                dir('backend') {
+                    sh 'npm run build --if-present'
+                }
             }
         }
 
-        stage('Build') {
+        stage('Frontend - Install') {
             steps {
-                echo 'Build stage completed.'
+                echo 'Installing frontend dependencies...'
+                dir('frontend') {
+                    sh 'npm ci'
+                }
             }
         }
 
-        stage('Test') {
+        stage('Frontend - Test') {
             steps {
-                echo 'Test stage completed.'
+                echo 'Running frontend tests...'
+                dir('frontend') {
+                    sh 'npm test'
+                }
+            }
+        }
+
+        stage('Frontend - Build') {
+            steps {
+                echo 'Building frontend...'
+                dir('frontend') {
+                    sh 'npm run build'
+                }
             }
         }
     }
 
     post {
         success {
-            echo 'Pipeline completed successfully!'
+            echo '======================================'
+            echo 'NutriFlow CI Pipeline Successful!'
+            echo 'Install, Test and Build completed.'
+            echo '======================================'
         }
 
         failure {
-            echo 'Pipeline failed. Check the Console Output.'
+            echo '======================================'
+            echo 'NutriFlow CI Pipeline Failed!'
+            echo 'Check the failed stage in Jenkins.'
+            echo '======================================'
+        }
+
+        always {
+            echo 'Jenkins pipeline execution completed.'
         }
     }
 }

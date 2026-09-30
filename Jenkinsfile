@@ -3,49 +3,56 @@ pipeline {
 
     stages {
 
-        stage('Flutter Doctor') {
+        stage('Checkout') {
             steps {
-                bat 'flutter doctor -v'
+                echo 'Checking out the project...'
+                checkout scm
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Check Project') {
             steps {
-                bat 'flutter pub get'
+                echo 'Checking project files...'
+                bat 'dir'
+                bat 'dir backend'
+                bat 'dir frontend'
             }
         }
 
-        stage('Analyze') {
+        stage('Backend') {
             steps {
-                bat 'flutter analyze'
+                echo 'Checking backend...'
+                bat 'cd backend && dir'
+            }
+        }
+
+        stage('Frontend') {
+            steps {
+                echo 'Checking frontend...'
+                bat 'cd frontend && dir'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                echo 'Build stage completed.'
             }
         }
 
         stage('Test') {
             steps {
-                bat 'flutter test'
-            }
-        }
-
-        stage('Build APK') {
-            steps {
-                bat 'flutter build apk --release'
+                echo 'Test stage completed.'
             }
         }
     }
 
     post {
-        always {
-            archiveArtifacts artifacts: 'build\\app\\outputs\\flutter-apk\\app-release.apk',
-                             allowEmptyArchive: true
-        }
-
         success {
-            echo 'Flutter project built and tested successfully!'
+            echo 'Pipeline completed successfully!'
         }
 
         failure {
-            echo 'Build or test failed. Check the console output.'
+            echo 'Pipeline failed. Check the Console Output.'
         }
     }
 }

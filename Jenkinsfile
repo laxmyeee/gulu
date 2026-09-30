@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        PATH = "C:\\src\\flutter\\bin;${env.PATH}"
-    }
-
     stages {
 
         stage('Clone') {
@@ -13,21 +9,21 @@ pipeline {
             }
         }
 
-        stage('Flutter Version') {
-            steps {
-                bat 'flutter --version'
-            }
-        }
-
         stage('Install Dependencies') {
             steps {
-                bat 'flutter pub get'
+                bat 'cd frontend && npm install'
             }
         }
 
-        stage('Test') {
+        stage('Lint') {
             steps {
-                bat 'flutter test'
+                bat 'cd frontend && npm run lint'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                bat 'cd frontend && npm run build'
             }
         }
     }

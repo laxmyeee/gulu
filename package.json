@@ -1,0 +1,21 @@
+{
+  "name": "nutriflow",
+  "version": "1.0.0",
+  "description": "Welcome to the official repository for your team's Zoople Hackathon project.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/laxmyeee/gulu.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/laxmyeee/gulu/issues"
+  },
+  "homepage": "https://github.com/laxmyeee/gulu#readme"
+}

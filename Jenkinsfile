@@ -3,15 +3,10 @@ pipeline {
 
     stages {
 
-        stage('Check Node') {
-            steps {
-                bat 'node --version'
-                bat 'npm --version'
-            }
-        }
-
         stage('Backend - Install') {
             steps {
+                echo 'Installing backend dependencies...'
+
                 dir('backend') {
                     bat 'npm ci'
                 }
@@ -20,30 +15,38 @@ pipeline {
 
         stage('Backend - Test') {
             steps {
+                echo 'Running backend tests...'
+
                 dir('backend') {
-                    bat 'echo No backend tests configured yet'
+                    bat 'node tests/testSubscriptionMapping.js'
                 }
             }
         }
 
         stage('Backend - Build') {
             steps {
+                echo 'Building backend...'
+
                 dir('backend') {
-                    bat 'echo Backend build completed'
+                    bat 'npm run build --if-present'
                 }
             }
         }
 
         stage('Frontend - Install') {
             steps {
+                echo 'Installing frontend dependencies...'
+
                 dir('frontend') {
-                    bat 'npm ci'
+                    bat 'npm install'
                 }
             }
         }
 
         stage('Frontend - Test') {
             steps {
+                echo 'Running frontend tests...'
+
                 dir('frontend') {
                     bat 'npm run test --if-present'
                 }
@@ -52,6 +55,8 @@ pipeline {
 
         stage('Frontend - Build') {
             steps {
+                echo 'Building frontend...'
+
                 dir('frontend') {
                     bat 'npm run build'
                 }
@@ -61,16 +66,21 @@ pipeline {
 
     post {
         success {
-            echo 'Build and tests completed successfully!'
+            echo '======================================'
+            echo 'NutriFlow CI Pipeline Successful!'
+            echo 'Install, Test and Build completed.'
+            echo '======================================'
         }
 
         failure {
-            echo 'Build or tests failed.'
+            echo '======================================'
+            echo 'NutriFlow CI Pipeline Failed!'
+            echo 'Check the failed stage in Jenkins.'
+            echo '======================================'
         }
 
         always {
-            archiveArtifacts artifacts: 'frontend/dist/**',
-                             allowEmptyArchive: true
+            echo 'Jenkins pipeline execution completed.'
         }
     }
 }
